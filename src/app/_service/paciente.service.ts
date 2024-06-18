@@ -2,19 +2,20 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { environment } from '../../environments/environment.development';
 import { Paciente } from '../_model/paciente';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PacienteService {
 
-  private url: string = environment.HOST;
+  private url: string = `${environment.HOST}/pacientes`;
 
   private http = inject(HttpClient);
 
   constructor() { }
 
-  listar(){
-    this.http.get<Paciente[]>(`${this.url}/pacientes`);
+  listar():Observable<Paciente[]> {
+    return this.http.get<Paciente[]>(this.url);
   }
 }
