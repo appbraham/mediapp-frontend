@@ -1,6 +1,8 @@
+<router-outlet />
+
 <mat-form-field>
-  <mat-label>Filter</mat-label>
-  <input matInput (keyup)="filtrar($event)" placeholder="Buscar por nombre" #input>
+  <mat-label>Buscar paciente</mat-label>
+  <input matInput (keyup)="filtrar($event)" placeholder="Juan Perez" #input>
 </mat-form-field>
 
 <div class="mat-elevation-z8">
@@ -34,7 +36,7 @@
     <ng-container matColumnDef="acciones">
       <th mat-header-cell *matHeaderCellDef mat-sort-header> Acciones </th>
       <td mat-cell *matCellDef="let row">
-        <button mat-icon-button color="primary" aria-label="Edit Icon"><mat-icon>edit</mat-icon></button>
+        <button mat-icon-button color="primary" [routerLink]="['edicion', row.idPaciente]" aria-label="Edit Icon"><mat-icon>edit</mat-icon></button>
         <button mat-icon-button color="warn" aria-label="Delete Icon"><mat-icon>delete</mat-icon></button>
       </td>
     </ng-container>
@@ -49,6 +51,12 @@
   </table>
 
   <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" aria-label="Select page of users"></mat-paginator>
+</div>
+
+<div class="nuevo-paciente">
+  <button mat-fab color="accent" routerLink='/paciente/nuevo' aria-label="Agregar nuevo paciente">
+    <mat-icon>add</mat-icon>
+  </button>
 </div>
 
 

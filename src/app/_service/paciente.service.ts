@@ -18,4 +18,20 @@ export class PacienteService {
   listar():Observable<Paciente[]> {
     return this.http.get<Paciente[]>(this.url);
   }
+
+  listarPorId(id : number): Observable<Paciente>{
+    return this.http.get<Paciente>(`${this.url}/${id}`);
+  }
+
+  registrar(paciente: Paciente){
+    return this.http.post(this.url, paciente);
+  }
+
+  modificar(paciente: Paciente){
+    return this.http.put(this.url, paciente);
+  }
+
+  eliminar(id: number){
+    return this.http.delete(`${this.url}/${id}`);
+  }
 }
