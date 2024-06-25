@@ -5,14 +5,17 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
-import { ActivatedRoute, Params, RouterLink } from '@angular/router';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
+import { ActivatedRoute, Params, Router, RouterLink } from '@angular/router';
 import { PacienteService } from '../../../_service/paciente.service';
+import { Paciente } from '../../../_model/paciente';
+import { switchMap } from 'rxjs';
 
 
 @Component({
   selector: 'app-paciente-edicion',
   standalone: true,
-  imports: [RouterLink, ReactiveFormsModule, MatCardModule, MatFormFieldModule, MatIconModule, MatButtonModule, MatInputModule],
+  imports: [RouterLink, ReactiveFormsModule, MatCardModule, MatFormFieldModule, MatIconModule, MatButtonModule, MatInputModule, MatSnackBarModule],
   templateUrl: './paciente-edicion.component.html',
   styleUrl: './paciente-edicion.component.css'
 })
@@ -22,6 +25,7 @@ export class PacienteEdicionComponent implements OnInit {
   public form!: FormGroup;
   private route = inject(ActivatedRoute);
   private pacienteService = inject(PacienteService);
+  private router = inject(Router);
 
   id: number = 0;
   edicion: boolean = false;
@@ -45,9 +49,6 @@ export class PacienteEdicionComponent implements OnInit {
 
   }
 
-  operar(): void {
-  }
-
   initForm() {
     if (this.edicion) {
       this.pacienteService.listarPorId(this.id).subscribe(paciente => {
@@ -61,6 +62,38 @@ export class PacienteEdicionComponent implements OnInit {
         });
       });
     }
+  }
+
+  operar(): void {
+
+    let paciente = new Paciente();
+    paciente.idPaciente = this.form.value['id'];
+    paciente.nombres = this.form.value['nombres'];
+    paciente.apellidos = this.form.value['apellidos'];
+    paciente.dni = this.form.value['dni'];
+    paciente.telefono = this.form.value['telefono'];
+    paciente.direccion = this.form.value['direccion'];
+
+    if(this.edicion){
+      //FORMA COMUN
+      this.pacienteService.modificar(paciente).subscribe( () => {
+        this.pacienteService.listar().subscribe( data => {
+          this.pacienteService.pacienteCambio.next(data);
+          this.pacienteService.mensajeCambio.next('SE MODIFICÓ');
+        })
+      })
+    }else {
+      //FORMA PRACTICA
+      this.pacienteService.registrar(paciente).pipe(switchMap( () => {
+        return this.pacienteService.listar();
+      })).subscribe( data => {
+        this.pacienteService.pacienteCambio.next(data);
+        this.pacienteService.mensajeCambio.next('SE REGISTRÓ');
+      });
+    }
+
+    this.router.navigate(['paciente']);
+
   }
 
 }

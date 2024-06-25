@@ -2,12 +2,15 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { environment } from '../../environments/environment.development';
 import { Paciente } from '../_model/paciente';
-import { Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PacienteService {
+
+  pacienteCambio = new Subject<Paciente[]>();
+  mensajeCambio = new Subject<string>();
 
   private url: string = `${environment.HOST}/pacientes`;
 

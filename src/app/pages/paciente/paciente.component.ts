@@ -1,4 +1,4 @@
-import {  Component, OnInit, ViewChild, inject } from '@angular/core';
+import { Component, OnInit, ViewChild, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -10,6 +10,8 @@ import { RouterOutlet, RouterLink } from '@angular/router';
 
 import { Paciente } from '../../_model/paciente';
 import { PacienteService } from '../../_service/paciente.service';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { switchMap } from 'rxjs';
 
 @Component({
   selector: 'app-paciente',
@@ -21,6 +23,7 @@ import { PacienteService } from '../../_service/paciente.service';
 export class PacienteComponent implements OnInit {
 
   private pacienteService = inject(PacienteService);
+  private snackBar = inject(MatSnackBar);
 
   displayedColumns: string[] = ['idPaciente', 'nombres', 'apellidos', 'dni', 'acciones'];
   dataSource!: MatTableDataSource<Paciente>;
@@ -32,12 +35,27 @@ export class PacienteComponent implements OnInit {
   sort!: MatSort;
 
   ngOnInit(): void {
+
+    this.pacienteService.pacienteCambio.subscribe(data => {
+      this.dataSource = new MatTableDataSource(data);
+      this.dataSource.paginator = this.paginator;
+      this.dataSource.sort = this.sort;
+    });
+
     this.pacienteService.listar().subscribe(data => {
       this.dataSource = new MatTableDataSource(data);
       this.dataSource.paginator = this.paginator;
       this.dataSource.sort = this.sort;
     });
+
+    this.pacienteService.mensajeCambio.subscribe(data => {
+      this.snackBar.open(data, 'AVISO', {
+        duration: 2000
+      });
+    });
+
   }
+
 
   filtrar(event: Event) {
     const filterValue = (event.target as HTMLInputElement).value;
@@ -46,6 +64,15 @@ export class PacienteComponent implements OnInit {
     if (this.dataSource.paginator) {
       this.dataSource.paginator.firstPage();
     }
+  }
+
+  eliminar(idPaciente: number){
+    this.pacienteService.eliminar(idPaciente).pipe( switchMap( () => {
+      return this.pacienteService.listar();
+    })).subscribe( data => {
+      this.pacienteService.pacienteCambio.next(data);
+      this.pacienteService.mensajeCambio.next('SE ELIMINÓ')
+    });
   }
 
 
