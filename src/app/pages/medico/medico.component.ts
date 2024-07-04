@@ -1,4 +1,4 @@
-import { Component, ViewChild, inject } from '@angular/core';
+import { Component, OnInit, ViewChild, inject } from '@angular/core';
 import { RouterLink, RouterOutlet } from '@angular/router';
 import { AngMaterialModule } from '../../ang-material/ang-material.module';
 import { MedicoService } from '../../_service/medico.service';
@@ -18,7 +18,7 @@ import { MedicoDialogoComponent } from './medico-dialogo/medico-dialogo.componen
   templateUrl: './medico.component.html',
   styleUrl: './medico.component.css'
 })
-export class MedicoComponent {
+export class MedicoComponent implements OnInit{
 
   private medicoService = inject(MedicoService);
   private snackBar = inject(MatSnackBar);
@@ -65,20 +65,23 @@ export class MedicoComponent {
   }
 
   abrirDialogo(medico?:Medico){
+
+    let med = medico != null ? medico : new Medico();
+
     this.matDialog.open(MedicoDialogoComponent, {
-      width: '250px',
-      data: medico,
+      width: '340px',
+      data: med,
     }
     );
   }
 
   eliminar(medico: Medico) {
-    // this.medicoService.eliminar(idMedico).pipe(switchMap(() => {
-    //   return this.medicoService.listar();
-    // })).subscribe(data => {
-    //   this.medicoService.medicoCambio.next(data);
-    //   this.medicoService.mensajeCambio.next('SE ELIMINÓ')
-    // });
+    this.medicoService.eliminar(medico.idMedico).pipe(switchMap(() => {
+      return this.medicoService.listar();
+    })).subscribe(data => {
+      this.medicoService.medicoCambio.next(data);
+      this.medicoService.mensajeCambio.next('SE ELIMINÓ')
+    });
   }
 
 }

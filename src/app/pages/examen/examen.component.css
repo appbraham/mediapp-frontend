@@ -1,9 +1,3 @@
-.nuevo-paciente {
-  display: flex;
-  justify-content: end;
-  margin-top: 20px;
-}
-/* ------ */
 .example-container {
   display: flex;
   flex-direction: column;

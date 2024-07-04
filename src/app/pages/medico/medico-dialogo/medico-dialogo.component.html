@@ -1,1 +1,26 @@
-<p>medico-dialogo works!</p>
+<div class="dialog-container">
+  @if (medico.idMedico) {
+    <h2>Modificar Médico</h2>
+  } @else {
+    <h2>Nuevo Médico</h2>
+  }
+  <div>
+    <mat-form-field>
+      <input matInput placeholder="Juan Perez" [(ngModel)]="medico.nombres">
+    </mat-form-field>
+    <mat-form-field>
+      <input matInput placeholder="Apellidos" [(ngModel)]="medico.apellidos">
+    </mat-form-field>
+    <mat-form-field>
+      <input matInput placeholder="CMP" [(ngModel)]="medico.cmp" max="15" maxlength="15" type="number">
+    </mat-form-field>
+    <mat-form-field>
+      <input matInput placeholder="foto" [(ngModel)]="medico.fotoUrl">
+    </mat-form-field>
+    <img mat-card-image [src]="medico.fotoUrl" alt="" width="100%"  *ngIf="medico.fotoUrl != null">
+  </div>
+  <div class="dialog-cta">
+    <button mat-raised-button color="primary" (click)="operar()">Aceptar</button>
+    <button mat-raised-button color="accent" (click)="cancelar()">Cancelar</button>
+  </div>
+</div>
